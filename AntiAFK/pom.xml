@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.ftlz.spigot.antiafk</groupId>
-  <artifactId>DeathLog</artifactId>
+  <artifactId>AntiAFK</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
 
-  <name>DeathLog</name>
+  <name>AntiAFK</name>
   <url>https://github.com/beeradmoore/SpigotMC-AntiAFK</url>
 
   <properties>
