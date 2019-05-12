@@ -1,33 +1,62 @@
 package com.ftlz.spigot.antiafk;
 
-import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.FishHook;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
-import org.bukkit.util.BoundingBox;
 
 public class AFKListener implements Listener
 {
-    App _app;
+    private ConcurrentHashMap<String, FishingData> _fishingLog;
+    private App _app;
+
     public AFKListener(App app)
     {
         _app = app;
+        _fishingLog = new ConcurrentHashMap<String, FishingData>();
     }
 
     @EventHandler
     public void onFish(PlayerFishEvent event)
     {
-        _app.getLogger().log(Level.INFO, event.getEventName());
-        _app.getLogger().log(Level.INFO, event.getState().toString());
+        //long currentTime = java.lang.System.currentTimeMillis();
+        //_app.getLogger().log(Level.INFO, event.getEventName());
+        //_app.getLogger().log(Level.INFO, event.getState().toString());
+        //_app.getLogger().log(Level.INFO, "" + currentTime);
+        //_app.getLogger().log(Level.INFO, "" + (currentTime - _previousTime));
+        //_previousTime = currentTime;
+    
+        Player player = event.getPlayer();
+        String playerName = player.getName();
+
+        if (event.getState() == State.FISHING)
+        {
+            FishingData fishingData = _fishingLog.get(playerName);
+            if (fishingData == null)
+            {
+                fishingData = new FishingData(_app);
+                _fishingLog.put(playerName, fishingData);
+            }
+
+            fishingData.TrackFishingStart(player, event.getHook());   
+        }
+        else if (event.getState() == State.CAUGHT_FISH)
+        {            
+            FishingData fishingData = _fishingLog.get(playerName);
+            if (fishingData == null)
+            {
+                fishingData = new FishingData(_app);
+                _fishingLog.put(playerName, fishingData);       
+            }
+
+            fishingData.TrackFishingEnd(player, event.getHook());
+        }
         
 
+        /*
         Entity caught = event.getCaught();
         
 
@@ -97,6 +126,8 @@ public class AFKListener implements Listener
 
 
         }
+        */
+
 
         // Best bet is to calculate time between CAUGHT_FISH and FISHING, relate that to position in the world. 
         /*
